@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id String @id @default(uuid())
+  username String @unique
+  imageUrl String @db.Text
+  externalUserId String @unique
+  bio String? @db.Text
+
+  liveId String? @db.Text
+
+  background Background[]
+
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt 
+}
+
+model Gift {
+  id String @id @default(uuid())
+  
+  streamId String 
+  gifterId String
+  giftTypeId String
+
+  giftType GiftType @relation(fields: [giftTypeId], references: [id], onDelete: Cascade)
+
+  createAt DateTime @default(now())
+
+
+  @@index([streamId])
+  @@index([gifterId])
+  @@index([giftTypeId])
+}
+
+model GiftType {
+  id String @id @default(uuid())
+  name String @unique
+  drawType String
+
+  imageUrl String @db.Text
+
+  gifts Gift[]
+  drawingStep DrawingStep[]
+}
+
+model Color {
+  id String @id @default(uuid())
+  name String @unique
+  
+  value String
+
+  imageUrl String @db.Text
+  drawingStep DrawingStep[]
+}
+
+model DrawingStep {
+  id Int @id @default(autoincrement())
+  roomId String 
+
+  startX Float
+  startY Float
+  endX Float?
+  endY Float?
+
+  colorId String
+
+  order Int
+  giftTypeId String
+  giftType GiftType @relation(fields: [giftTypeId], references: [id], onDelete: Cascade)
+  color Color @relation(fields: [colorId], references: [id], onDelete: Cascade)
+
+  @@index([giftTypeId])
+  @@index([colorId])
+
+}
+
+model Background {
+  id Int @id @default(autoincrement())
+
+  name String @unique
+
+  imageUrl String @db.Text
+
+  userId String?
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
