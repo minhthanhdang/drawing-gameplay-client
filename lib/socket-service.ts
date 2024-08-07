@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-export const socket = io("http://3.107.49.137:3001")
+export const socket = io("https://3.107.49.137:3001")
 
 export const announceStartLive = (roomId: string, userId: string) => {
 
