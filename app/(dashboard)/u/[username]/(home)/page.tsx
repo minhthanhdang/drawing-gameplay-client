@@ -30,9 +30,7 @@ const CreatorPage = async ({
   }
 
   const self = await getSelf();
-  if (self.liveId) {
-    throw new Error("User error")
-  }
+  
   
 
   const colors = await getColors();
